@@ -1,0 +1,48 @@
+<div *ngIf="formations.length > 0; else noData">
+  <h2>Your Formations</h2>
+  <div class="container">
+    <div class="row ">
+      <!-- Loop through the formations array -->
+      <div class="card d-flex flex-wrap mx-auto" *ngFor="let us of formations">
+        <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/Food/8-col/img (5).jpg" class="img-fluid" />
+          <a href="#!">
+            <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+          </a>
+        </div>
+        <div class="card-body" *ngIf="token" [routerLink]="['/formation', us._id]" [queryParams]="{ role: 'participant'}">
+          <h5 class="card-title font-weight-bold"><a>{{ us.name }}</a></h5>
+          <ul class="list-unstyled list-inline mb-0">
+            <li class="list-inline-item me-0"><i class="fas fa-star text-warning fa-xs"></i></li>
+            <li class="list-inline-item me-0"><i class="fas fa-star text-warning fa-xs"></i></li>
+            <li class="list-inline-item me-0"><i class="fas fa-star text-warning fa-xs"></i></li>
+            <li class="list-inline-item me-0"><i class="fas fa-star text-warning fa-xs"></i></li>
+            <li class="list-inline-item"><i class="fas fa-star-half-alt text-warning fa-xs"></i></li>
+            <li class="list-inline-item"><p class="text-muted">4.5 (413)</p></li>
+          </ul>
+          <p class="mb-2">• {{us.place}}</p>
+          <p class="card-text">
+            {{ us.description | slice:0:100 }} 
+            <span *ngIf="us.description?.length > 100">...</span>
+          </p>
+          <hr class="my-4" />
+
+          <a href="#!" class="btn btn-link link-secondary p-md-1 mb-0">Button</a>
+        </div>
+        <button type="button" class="btn btn-danger btn-floating" (click)="deleteFormation(us._id)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No data template -->
+<ng-template #noData>
+  <p>No formations found for this user.</p>
+</ng-template>
+
+<!-- Error message -->
+<div *ngIf="errorMessage">
+  <p class="error">{{ errorMessage }}</p>
+</div>

@@ -1,0 +1,136 @@
+<div class="back">
+    <div class="container">
+        <div class="row">
+        </div>
+
+        <div class="row">
+            <div class="col offset-4">
+                <h1 class="title">Give us your satisfaction</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="tabel table-bordered">
+                    <tr>
+                        <td>Participant's name:</td>
+                        <td>{{message}}</td>
+                    </tr>
+                    <tr>
+                        <td>Participant's institution</td>
+                        <td>{{institution ? institution : 'No institution available'}}</td>
+                      </tr>
+                </div>
+            </div>
+            <div class="col" *ngIf="rep1!=undefined && rep2!=undefined && rep3!=undefined && rep4!=undefined">
+                <circle-progress [percent]="rating(rep1,rep2,rep3,rep4)" [subtitle]="'your satisfaction'" [radius]="100"
+                    [outerStrokeWidth]="16" [innerStrokeWidth]="8" [outerStrokeColor]="'#be29f5'"
+                    [innerStrokeColor]="'#a009d7'" [animation]="true" [animationDuration]="300"></circle-progress>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col offset-2">
+            <form>
+                <div class="tabel">
+                    <tr>
+                        <th></th>
+                        <th>Alright</th>
+                        <th>GOOD</th>
+                        <th>AVERAGE</th>
+                        <th>not satisfying</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>TRAINING EVALUATION:</h5>
+                            <p>Mastery of the subject, pedagogical quality (rhythm, communication ....), time
+                                management, compliance with the program</p>
+                        </td>
+                        <td> <input [(ngModel)]="rep1" class="check" type="radio" name="check1" value="5"></td>
+                        <td> <input [(ngModel)]="rep1" class="check" type="radio" name="check1" value="4"></td>
+                        <td> <input [(ngModel)]="rep1" class="check" type="radio" name="check1" value="3"></td>
+                        <td> <input [(ngModel)]="rep1" class="check" type="radio" name="check1" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>ENVIRONMENTAL ASSESSMENT:</h5>
+                            <p>Welcome, training room, break.....</p>
+                        </td>
+                        <td> <input [(ngModel)]="rep2" class="check" type="radio" name="check2" value="5"></td>
+                        <td> <input [(ngModel)]="rep2" class="check" type="radio" name="check2" value="4"></td>
+                        <td> <input [(ngModel)]="rep2" class="check" type="radio" name="check2" value="3"></td>
+                        <td> <input [(ngModel)]="rep2" class="check" type="radio" name="check2" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>EVALUATION OF PEDAGOGICAL MEANS:</h5>
+                            <p>computer equipment, course material, connection;</p>
+                        </td>
+                        <td> <input [(ngModel)]="rep3" class="check" type="radio" name="check3" value="5"></td>
+                        <td> <input [(ngModel)]="rep3" class="check" type="radio" name="check3" value="4"></td>
+                        <td> <input [(ngModel)]="rep3" class="check" type="radio" name="check3" value="3"></td>
+                        <td> <input [(ngModel)]="rep3" class="check" type="radio" name="check3" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h5>TRAINING EVALUATION :</h5>
+                            <p>Objectives achieved</p>
+                        </td>
+                        <td> <input [(ngModel)]="rep4" class="check" name="check4" type="radio" value="5"></td>
+                        <td> <input [(ngModel)]="rep4" class="check" name="check4" type="radio" value="4"></td>
+                        <td> <input [(ngModel)]="rep4" class="check" name="check4" type="radio" value="3"></td>
+                        <td> <input [(ngModel)]="rep4" class="check" name="check4" type="radio" value="0"></td>
+                    </tr>
+                </div>
+            </form>
+        </div>
+        <div class="row" *ngIf="rep1!=undefined && rep2!=undefined && rep3!=undefined && rep4!=undefined">
+            <div class="col offset-3">
+                <div class="zone">
+                    <div class="row">
+                        <form [formGroup]="feedback" (ngSubmit)="feedbacksubmit()">
+                            <label for="zone1">Cette formattion a-t-elle fait naitre de nouveaux besoins?<input
+                                    style="margin-left:20px ;" class="check" name="check4" type="radio" value="Oui"> Oui
+                                <input style="margin-left:20px ;" class="check" name="check4" type="radio"
+                                    value="Non">Non
+                                <br>lesquels?</label>
+                            <textarea class="form-control" id="zone1" formControlName="besoins"></textarea>
+
+
+                            <div class="row">
+                                <label for="responsable">coordonnées du reponsable a contacter dans votre établissement
+                                    pour
+                                    une
+                                    prochaine formation:</label>
+                                <label for="responsable">Nom responsable:</label>
+                                <input type="text" id="responsable" class="form-control"
+                                    formControlName="Nom_responsable">
+                                <div class="col">
+                                    <label for="tel">Tel:</label>
+                                    <input type="tel" class="form-control" id="tel" formControlName="Tel">
+                                </div>
+                                <div class="col">
+                                    <label for="Fax">Fax:</label>
+                                    <input type="text" class="form-control" id="Fax" formControlName="Fax">
+                                </div>
+                                <div class="col">
+                                    <label for="email">email:</label>
+                                    <input type="email" class="form-control" id="email" formControlName="email">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="zone2">Suggestion et recommandions d'améliomation:</label>
+                                <textarea class="form-control" id="zone2" formControlName="Suggestion"></textarea>
+                            </div>
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <input class="btn btn-success" style="margin: 30px;" type="submit" value="send ">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

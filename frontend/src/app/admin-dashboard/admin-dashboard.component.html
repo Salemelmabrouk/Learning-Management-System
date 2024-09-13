@@ -1,0 +1,54 @@
+<!-- src/app/admin-dashboard/admin-dashboard.component.html -->
+
+<div class="container">
+  <h1>Admin Dashboard</h1>
+  
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <h2>{{ userCount }}</h2>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Formations</h5>
+          <h2>{{ formationCount }}</h2>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Trainers</h5>
+          <h2>{{ trainerCount }}</h2>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-12 mt-4">
+      <h3>Participants by Formation</h3>
+      <div *ngFor="let formation of formations" class="card mb-2">
+        <div class="card-body">
+          <h5 class="card-title">{{ formation.name }}</h5>
+          <p class="card-text">Participants: {{ formation.participantCount }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <p>Total Participants Across All Formations: {{ totalParticipants }}</p>
+  </div>
+ 
+  
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+</div>

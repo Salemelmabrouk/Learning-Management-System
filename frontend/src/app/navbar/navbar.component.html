@@ -1,0 +1,141 @@
+<header>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+    <div class="container-fluid">
+      <!-- Logo and Brand -->
+      <a class="navbar-brand" (click)="gotoaccueill()">
+        <div class="logo-container">
+          <img src="../../assets/pngegg.png" alt="Logo" class="logo-img">
+          <span class="logo-title">   <span> LEARNING</span>&nbsp;
+          <span> MANAGEMENT</span>
+          &nbsp; <span>SYSTEM</span></span>
+        </div>
+      </a>
+      
+
+      <!-- Toggler for mobile view -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar content -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Not Authenticated -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="!authenticated">
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotohome()">Home</button> 
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoaccueill()">About Us</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoformation()">Go to training</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-primary me-2" (click)="gotosignin()">Sign In</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-primary" (click)="gotosignup()">Sign Up</button>
+          </li>
+        </ul>
+
+        <!-- Authenticated Participant -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="authenticated && Role === 'participant'">
+
+          <li class="nav-item"> 
+            <button class="btn btn-link nav-link" (click)="gotohome()">Home</button> 
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoaccueill()">About Us</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoformation()">Go to training</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoUserFormations()">My Trainings</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotofeedback()">Feedback</button>
+          </li>
+          <!-- Avatar Dropdown for Participants -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdownMenuAvatar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="../../assets/avatar.png" class="rounded-circle" height="30" alt="Avatar" loading="lazy" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
+              <li><a class="dropdown-item" href="#">My profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- Authenticated Formateur -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="authenticated && Role === 'formateur'">
+
+          <li class="nav-item"> 
+            <button class="btn btn-link nav-link" (click)="gotohome()">Home</button> 
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoaccueill()">About Us</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoformation()">Course</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoCreat()">Create Training</button>
+          </li>
+          <!-- Avatar Dropdown for Formateurs -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdownMenuAvatar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="../../assets/avatar.png" class="rounded-circle" height="30" alt="Avatar" loading="lazy" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
+              <li><a class="dropdown-item" href="#">My profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- Authenticated Admin -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="authenticated && Role === 'ADMIN'">
+
+          <li class="nav-item"> 
+            <button class="btn btn-link nav-link" (click)="gotohome()">Home</button> 
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoaccueill()">About Us</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotoformation()">Course</button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="gotofeedback()">Feedback</button>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-link nav-link" [routerLink]="'/admin-dashboard'">Dashboard</a>
+          </li>
+          <!-- Avatar Dropdown for Admins -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdownMenuAvatar" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="../../assets/avatar.png" class="rounded-circle" height="30" alt="Avatar" loading="lazy" />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
+              <li><a class="dropdown-item" href="#">My profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- Authenticated Users with No Role -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" *ngIf="authenticated && !Role">
+          <li class="nav-item">
+            <button class="btn btn-danger" (click)="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

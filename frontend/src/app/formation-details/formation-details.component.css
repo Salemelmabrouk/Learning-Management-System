@@ -1,0 +1,8 @@
+.align-heading {
+    margin-left: 0; /* Ensure no left margin */
+    padding-left: 0; /* Ensure no left padding */
+  }
+
+.custom-line {
+    border: 1px  hsl(180, 70%, 42%); /* Change to the desired color */
+  }

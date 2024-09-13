@@ -1,0 +1,52 @@
+<div class="back">
+  <div class="container">
+    <section class="d-flex flex-wrap mx-auto my-5" style="gap: 1rem;">
+      <div class="card" *ngFor="let us of formations">
+        <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+          <img src="https://mdbootstrap.com/img/Photos/Horizontal/Food/8-col/img (5).jpg" class="img-fluid" />
+          <a href="#!">
+            <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+          </a>
+        </div>
+        <div class="card-body" *ngIf="token" [routerLink]="['/formation', us._id]" [queryParams]="{ role: 'participant'}">
+          <h5 class="card-title font-weight-bold"><a>{{ us.name }}</a></h5>
+          <p>with {{ us.description | slice:0:100 }} 
+            <span *ngIf="us.description?.length > 100">...</span>
+            from {{ us.startDate | date }} TO {{ us.endDate | date }} stay tuned
+          </p>
+          <button (click)="assignParticipant(us._id); $event.stopPropagation()">Participates in it</button>
+          
+          <div class="row">
+            <div *ngIf="Role === 'participant'">
+              <div class="col">
+                <button type="button" class="btn btn-light">Join us</button>
+              </div>
+              <div class="col" *ngIf="isTodayEndDate(us.endDate)">
+                <button type="button" class="btn btn-light" (click)="gotofeedback() ; $event.stopPropagation()">Satisfied</button>
+              </div>
+            </div>
+            <div *ngIf="Role === 'formateur'">
+              <div class="col">
+                <button type="button" class="btn btn-light" [routerLink]="'/edit-formation'" [queryParams]="{ id: us._id }">Update</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback section -->
+         <!-- Feedback section -->
+         <div class="feedback-section mt-3">
+          <ngx-star-rating [value]="us?.rating || 0" [readOnly]="true" class="custom-star-rating"></ngx-star-rating>
+          <p *ngIf="us?.feedback">{{ us.feedback }}</p>
+          <div *ngIf="Role === 'participant' && isTodayEndDate(us.endDate)">
+            <textarea [(ngModel)]="us.feedback" placeholder="Leave your feedback here..." rows="3"></textarea>
+            
+            <button (click)="submitFeedback(us)">Submit Feedback</button>
+          </div>
+        </div>
+        
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

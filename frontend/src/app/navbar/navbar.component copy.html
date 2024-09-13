@@ -1,0 +1,41 @@
+<header>
+  <img class="logo" (click)="gotoaccueill()" src="../../assets/logo.jpg" alt="Logo">
+
+  <!-- Show navigation for non-authenticated users -->
+  <div class="nav" *ngIf="!authenticated">
+    <button class="btn btn-link" (click)="gotoaccueill()">About us</button>
+    <button class="btn btn-link" (click)="gotoformation()">Go to training</button>
+    <button class="btn-sign" (click)="gotosignin()">Sign In</button>
+    <button class="btn-sign" (click)="gotosignup()">Sign Up</button>
+  </div>
+  
+  <!-- Show navigation for 'participant' role -->
+  <div class="nav" *ngIf="authenticated && Role === 'participant'">
+    <button class="btn btn-link" (click)="gotoaccueill()">About us</button>
+    <button class="btn btn-link" (click)="gotoformation()">Go to training</button>
+    <button class="btn btn-link" (click)="gotoUserFormations()">My Trainings</button> 
+    <button class="btn btn-link" (click)="gotofeedback()">Feedback</button>
+    <button class="btn-sign" (click)="logout()">Logout</button>
+  </div>
+
+  <!-- Show navigation for 'formateur' role -->
+  <div class="nav" *ngIf="authenticated && Role === 'formateur'">
+    <button class="btn btn-link" (click)="gotoaccueill()">About us</button>
+    <button class="btn btn-link" (click)="gotoformation()">Training</button>
+    <button class="btn btn-link" (click)="gotoCreat()">Create Training</button>
+    <button class="btn-sign" (click)="logout()">Logout</button>
+  </div>
+
+
+  <div class="nav" *ngIf="authenticated && Role === 'ADMIN'">
+    <button class="btn btn-link" (click)="gotoaccueill()">About us</button>
+    <button class="btn btn-link" (click)="gotoformation()">Go to training</button>
+    <button class="btn btn-link" (click)="gotofeedback()">Feedback</button>
+    <button class="btn btn-link" [routerLink]="'/admin-dashboard'">Dashboard</button>
+    <button class="btn-sign" (click)="logout()">Logout</button>
+  </div>
+  <!-- Show navigation for authenticated users with no role -->
+  <div class="nav" *ngIf="authenticated && !Role">
+    <button class="btn-sign" (click)="logout()">Logout</button>
+  </div>
+</header>

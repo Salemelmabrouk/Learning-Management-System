@@ -1,0 +1,33 @@
+<div class="back">
+    <div class="container">
+      <div class="row">
+        <div class="col-4 offset-2">
+          <form class="was-validated" [formGroup]="createfr" (ngSubmit)="userSubmit()">
+            <h1>Create Training</h1>
+            <div class="form-floating">
+              <input type="text" class="form-control" formControlName="name" placeholder="Training Title" id="name" required>
+              <label for="name">Training Title</label>
+            </div>
+            <div class="form-floating">
+              <input type="text" class="form-control" formControlName="description" placeholder="Description" id="description" required>
+              <label for="description">Description</label>
+            </div>
+          
+            <h3>Date of Training</h3>
+            <input type="date" class="date" formControlName="startDate">
+            <input type="date" class="date" formControlName="endDate">
+            <div class="form-floating">
+              <input type="text" class="form-control" formControlName="place" placeholder="Place of Training" id="place" required>
+              <label for="place">Place of Training</label>
+            </div>
+            <div class="mb-3">
+              <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+              <input class="form-control" type="file" id="formFileMultiple" multiple>
+            </div>
+            <input class="bt" type="submit" value="Create Training">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

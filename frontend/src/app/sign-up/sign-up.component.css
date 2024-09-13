@@ -1,0 +1,116 @@
+
+.row{
+    
+    justify-content: center;
+    align-items: center;
+    
+}
+.back{
+    background-image: url(../../assets/background2.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 150vh;
+   
+    
+}
+
+.bt{
+    width: 340px;
+    height: 58px;
+    flex-shrink: 0;
+    background: #6C04BC;
+    color: #FFF;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 35px;
+    margin-left: 110px;
+}
+
+form{
+    margin-top: 50px;
+    width: 558px;
+    border-radius: 20px;
+    border: 1px solid #FCFCFC;
+    background: #FFF;
+    justify-content: center;
+    align-items: center;
+}
+input{
+    width: 500px;
+    padding: 7PX;
+    margin-left:20PX ;
+    
+}
+.par{
+    width: 669px;
+    height: 81px;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+
+}
+p{
+    width: 581px;
+    height: 107px;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;  
+}
+.title{
+    display: flex;
+    width: 279px;
+    height: 85px;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 150px;
+    flex-shrink: 0;
+    color: #6C04BC;
+    font-family: Roboto;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    }
+
+ label{
+    margin-top: 20px;
+    margin-left:20PX ;
+        color: #000;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    display: flex;
+    width: 240.11px;
+    height: 34.662px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    }
+ .form-select{
+        height: 50px;
+        width: 500px;
+        padding: 7PX;
+        margin-left: 20px;
+    }
+.P1{
+    color: black;
+}
+img{
+    width: 100px;
+
+}

@@ -1,0 +1,18 @@
+<div class="back">
+  <div class="container">
+    <form class="was-validated" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <h1>Sign In</h1>
+      <label for="username">Username</label>
+      <input type="text" class="form-control" id="username" formControlName="username" placeholder="username" required="">
+      
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password" required="">
+      
+      <input class="bt" type="submit" value="Sign In"><br>
+      
+      <p class="mt">Don't have an account? <button class="btn btn-link" (click)="gotoSignup()">Create One</button>
+      </p> 
+    </form>
+  </div>
+</div>
+

@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+<div class="containe">
+    <div class="container">
+        {{message}}
+        <div class="espace">
+            <div class="row">
+                <div class="col-3 offset-1">
+                    <img class="show" src="../../assets/study with us.jpg" alt="">
+                </div>
+                <div class="col offset-2">
+                    <h1 class="title">Learn without limits</h1>
+
+                    <p class="dec">Start, switch, or advance your career with more than 5,800 courses, Professional
+                        Certificates, and degrees from world-class universities and companies.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col offset-5">
+                <H1 class="Feedback">Feedback</H1>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="card">
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="card">
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-3">
+                    <div class="card">
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="prev"><i class="fa-solid fa-angle-left"></i></button>
+            <button id="next"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+        <div class="row">
+            <div class="col offset-3">
+                <div id="carouselExampleCaptions" class="carousel slide">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0"
+                            class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"
+                            aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"
+                            aria-label="Slide 3"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div *ngFor="let us of readData" class="carousel-item active">
+                            <img src="../../assets/carde.jpg" class="d-block w-100" alt="...">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>{{us.name}}</h5>
+                                <p>with {{us.description}} form {{us.startDate|date }} TO {{us.endDate|date}} stay tuned </p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>

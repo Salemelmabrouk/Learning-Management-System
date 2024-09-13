@@ -1,0 +1,59 @@
+<div class="back">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="par">Sign up, it's Free!</h1><br>
+                <p>We are happy to have you with us! Just fill out the form on the right side to create your account on our website and gain access to special member benefits.</p>
+            </div>
+            <div class="col">
+                <form class="was-validated" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+                    <h1 class="title">Create Account</h1>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" formControlName="username" placeholder="Username" id="username" required>
+                        <div *ngIf="signupForm.get('username')!.invalid && signupForm.get('username')!.touched" class="text-danger">
+                            Username is required.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-mail address</label>
+                        <input type="email" class="form-control" formControlName="email" placeholder="Email" id="email" required>
+                        <div *ngIf="signupForm.get('email')!.invalid && signupForm.get('email')!.touched" class="text-danger">
+                            Please enter a valid email.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" formControlName="password" placeholder="Password" id="password" required>
+                        <div *ngIf="signupForm.get('password')!.invalid && signupForm.get('password')!.touched" class="text-danger">
+                            Password is required.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sel">Role</label>
+                        <select class="form-select" formControlName="role" id="sel">
+                            <option value="participant">Participant</option>
+                            <option value="formateur">Formateur</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+
+                    <div *ngIf="signupForm.get('role')?.value === 'participant'" class="form-group">
+                        <label for="Participants_institution">Participant's Institution</label>
+                        <input type="text" class="form-control" formControlName="participantsInstitution" placeholder="Participant's Institution" id="Participants_institution" required>
+                        <div *ngIf="signupForm.get('participantsInstitution')!.invalid && signupForm.get('participantsInstitution')!.touched" class="text-danger">
+                            Participant's Institution is required.
+                        </div>
+                    </div>   
+
+                    <input class="btn btn-primary bt" type="submit" value="Create Account">
+                    <p class="P1">Already have an account? <button class="btn btn-link" (click)="gotosignin()">Sign In</button></p> 
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

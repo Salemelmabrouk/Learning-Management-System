@@ -1,0 +1,77 @@
+<section class="bg-light py-3 py-md-5 py-xl-8">
+    <div class="container">
+      <div class="row gy-4 gy-lg-0">
+        <!-- Sidebar with trainer info -->
+        <div class="col-12 col-lg-4 col-xl-3">
+          <div class="card widget-card border-light shadow-sm">
+            <div class="card-header text-bg-primary">
+              {{ trainerDetails?.username|| 'Unknown Trainer' }}
+            </div>
+            <div class="card-body">
+              <div class="text-center mb-3">
+                <img 
+                  [src]="trainerDetails?.photoUrl || '../../assets/user.png'" 
+                  class="img-fluid rounded-circle" 
+                  alt="Trainer"
+                >
+              </div>
+              <p>Name: {{ trainerDetails?.username || 'N/A' }}</p>
+              <p>Email: {{ trainerDetails?.email || 'N/A' }}</p>
+              <p>Phone: {{ trainerDetails?.phone || 'N/A' }}</p>
+              <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">Followers</h6>
+                  <span>7,854</span>
+                </li>
+                <!-- Additional trainer stats here -->
+              </ul>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Formation details -->
+        <div class="col-12 col-lg-8 col-xl-9">
+          <div class="card border-light shadow-sm">
+            <div class="card-header text-bg-primary">
+              {{ formationDetails?.name || 'Unknown Formation' }}
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ formationDetails?.description || 'No description' }}</h5>
+              
+              <p class="card-text">Rating: {{ formationDetails?.rating || 0 }} / 5</p>
+              <button class="btn btn-primary" (click)="assignParticipant()">Assign Participant</button>
+            </div>
+          </div>
+  
+          <!-- Feedback form -->
+          <div class="card border-light shadow-sm mt-4">
+            <div class="card-header text-bg-primary">
+              Leave Feedback
+            </div>
+            <div class="card-body">
+              <form [formGroup]="feedback">
+                <div class="mb-3">
+                  <label for="comment" class="form-label">Comment</label>
+                  <textarea 
+                    formControlName="comment" 
+                    class="form-control" 
+                    id="comment" 
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="rating" class="form-label">Rating</label>
+                  <ngx-star-rating 
+                    formControlName="rating" 
+                    [maxRating]="5" 
+                    [readOnly]="false"
+                  ></ngx-star-rating>
+                </div>
+                <button class="btn btn-primary" (click)="feedbacksubmit()">Submit Feedback</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
