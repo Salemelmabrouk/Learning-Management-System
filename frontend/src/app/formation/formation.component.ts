@@ -10,11 +10,15 @@ import { AuthService } from '../auth.service';
 })
 export class FormationComponent implements OnInit {
   public mydate: Date = new Date();
-  public formations: any[] = []; // Array to hold formations
-  public Role: string = ''; // User's role
-  public token: string | null = ''; // Authentication token
-  public errorMessage: string = ''; // Error message for handling errors
+  public formations: any[] = [];
+  public Role: string = '';
+  public token: string | null = '';
+  public errorMessage: string = '';
+  public currentPage: number = 1;
+  public totalPages: number = 1;
+  public limit: number = 10;
   starSize: number = 24;
+
   constructor(
     private router: Router,
     private service: ApiserviceService,
@@ -23,16 +27,24 @@ export class FormationComponent implements OnInit {
 
   ngOnInit(): void {
     this.token = this.authService.getToken();
+    this.loadFormations();
+  }
 
-    // Fetch all formations when the component is initialized
-    this.service.get_all_formation().subscribe({
+  loadFormations(page: number = this.currentPage): void {
+    this.service.get_all_formation(page, this.limit).subscribe({
       next: (data: any) => {
-        if (data.length > 0) {
-          this.formations = data.map((formation: any) => {
-            // Initialize rating to 0 if it's not present
+        console.log('Formations data:', data);
+        if (data.trainings && data.trainings.length > 0) {
+          this.formations = data.trainings.map((formation: any) => {
+            console.log('data',data.trainings)
             formation.rating = formation.rating || 0;
+            formation.imageUrl = formation.image?.url || ''; // Ensure `imageUrl` is a string
+            console.log('Formation imageUrl:', formation.imageUrl);
             return formation;
           });
+          this.currentPage = data.currentPage;
+          this.totalPages = data.totalPages;
+
         } else {
           this.errorMessage = 'No formations available.';
         }
@@ -42,6 +54,12 @@ export class FormationComponent implements OnInit {
         console.error('Error fetching formations:', error);
       }
     });
+  }
+
+  // Handle page change
+  changePage(page: number): void {
+    this.currentPage = page;
+    this.loadFormations(page);
   }
 
   getFormationById(id: string) {
@@ -64,7 +82,6 @@ export class FormationComponent implements OnInit {
         .subscribe({
           next: (response) => {
             console.log('Participant assigned successfully', response);
-            // Optionally update the UI or show a success message
           },
           error: (error) => {
             this.errorMessage = 'Error assigning participant.';
@@ -80,37 +97,22 @@ export class FormationComponent implements OnInit {
     this.router.navigate(['/feedback']);
   }
 
-  // Method to get user formations
-  getUserFormations(id: string) {
-    this.service.getUserFormations(id, this.token as string).subscribe({
-      next: (response: any) => {
-        this.formations = response.data; // Assuming formations come under `data`
-      },
-      error: (error) => {
-        this.errorMessage = 'Error fetching user formations.';
-        console.error('Error fetching user formations:', error);
-      }
-    });
-  }
   submitFeedback(formation: any): void {
     const feedbackData = {
       rating: formation.rating,
       feedback: formation.feedback,
     };
-  
+
     this.service.create_feedback(formation._id).subscribe(
       response => {
         console.log('Feedback submitted successfully:', response);
-        // Optionally, show a success message or refresh the feedback section
       },
       error => {
         console.error('Error submitting feedback:', error);
-        // Handle the error (show an error message, etc.)
       }
     );
   }
 
-  // Method to check if the formation end date is today
   isTodayEndDate(endDate: string): boolean {
     return new Date(this.mydate.toDateString()) === new Date(new Date(endDate).toDateString());
   }

@@ -1,40 +1,50 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import feedbackRoute from './routes/feedbackRoute.js';
 import formationRoute from './routes/formationRoute.js';
 import userRoute from './routes/userRoute.js';
-import authenticateToken from './middlewares/authRoutes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-
+import helmet from 'helmet';
+import dotenv from 'dotenv';
+import busboy from 'connect-busboy';
 dotenv.config();
 
 const app = express();
 
+app.use(helmet());
+
+const bb = busboy({
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB
+  }
+});
+
+app.use(bb);
+
 // Middlewares
-app.use(express.json({ limit: "50mb" }));
+app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(busboy());
 app.use(cors({
   origin: 'http://localhost:4200',
-  credentials: true, // Allow cookies for authenticated requests
+  credentials: true,
 }));
 
 // Routes
 app.use('/api/users', userRoute);
-
-// Apply authentication middleware before protected routes
-app.use("/api/feedback",  feedbackRoute);
+app.use("/api/feedback", feedbackRoute);
 app.use("/api/formation", formationRoute);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({
+  console.error("Error object:", err); // Log the entire error object
+  
+  res.status(err.http_code || 500).json({
     status: 'error',
-    message: 'Internal Server Error',
-    error: err.message || 'Something broke!',
+    message: err.message || 'Internal Server Error',
+    stack: err.stack || 'No stack trace available', // Provide fallback if stack is undefined
   });
 });
 

@@ -1,43 +1,107 @@
-import Training from "../models/formation.js";
-import User from '../models/userModel.js';
+import express from 'express';
+import multer from 'multer';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
+import Training from '../models/formation.js';
+import dotenv from 'dotenv';
 
-// Create a new training session
+dotenv.config();
+
+const app = express();
+
+// Increase the body size limit for the request
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Cloudinary storage configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'TRAININGS',
+    allowed_formats: ['jpg', 'png', 'jpeg'],
+  },
+});
+
+const upload = multer({ storage }).single('image');
+
+// Create formation controller
 const createFormation = async (req, res) => {
   try {
-    const formationData = req.body;
-    if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    const { name, startDate, endDate, description, place, trainingLevel, trainingCategory, curriculum, requirements } = req.body;
+
+    if (!name || !startDate || !endDate || !place || !trainingCategory) {
+      return res.status(400).json({ message: 'All required fields must be filled.' });
     }
-    const trainerId = req.user.id;
-    const trainer = await User.findById(trainerId);
-    if (!trainer) {
-      return res.status(404).json({ error: "Trainer not found." });
+
+    let parsedCurriculum = [];
+    let parsedRequirements = [];
+    try {
+      parsedCurriculum = JSON.parse(curriculum || '[]');
+      parsedRequirements = JSON.parse(requirements || '[]');
+    } catch (error) {
+      return res.status(400).json({ message: 'Invalid JSON format for curriculum or requirements' });
     }
-    formationData.trainer = {
-      id: trainerId,
-      name: trainer.name
+
+    const trainingData = {
+      name,
+      startDate,
+      endDate,
+      description,
+      place,
+      trainingLevel,
+      trainingCategory,
+      curriculum: parsedCurriculum,
+      requirements: parsedRequirements,
     };
-    const newTraining = await Training.create(formationData);
-    res.status(201).json({
-      success: true,
-      message: "Training created successfully",
-      data: newTraining,
-    });
+
+    // Handle image upload
+    if (req.file) {
+      trainingData.image = req.file.path;  // Cloudinary URL as string
+    } else {
+      return res.status(400).json({ message: 'Image is required' });
+    }
+
+    const newTraining = new Training(trainingData);
+    await newTraining.save();
+    res.status(201).json(newTraining);
+
   } catch (error) {
-    console.error("Error creating training:", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error('Error creating training:', error);
+    res.status(500).json({ message: 'Error creating training', error });
   }
 };
+
 
 // Get all training sessions
 const getAllTrainings = async (req, res) => {
+  // Default values for pagination
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+
+  if (page <= 0 || limit <= 0) {
+    return res.status(400).json({ error: 'Page and limit must be positive integers.' });
+  }
+
   try {
-    const trainings = await Training.find({});
-    res.status(200).json(trainings);
+    const trainings = await Training.find()
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+
+    const count = await Training.countDocuments();
+
+    res.status(200).json({
+      trainings,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      totalItems: count
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch training sessions." });
+    res.status(500).json({ error: 'Failed to fetch training sessions.' });
   }
 };
+
+
 
 // Get a single training session by ID
 const getTrainingById = async (req, res) => {
@@ -73,28 +137,45 @@ const getAllParticipants = async (req, res) => {
   }
 };
 
-// Assign a participant to a training session
 const addParticipant = async (req, res) => {
   try {
     const { formationId, participantId } = req.params;
 
+    // Validate IDs
+    if (!formationId || !participantId) {
+      return res.status(400).json({ error: "Formation ID and Participant ID are required." });
+    }
+
+    // Find the training session by ID
     const training = await Training.findById(formationId);
     if (!training) {
       return res.status(404).json({ error: "Training session not found." });
     }
 
+    // Log the current training document for debugging
+    console.log('Current Training:', training);
+
+    // Check if participant is already added
     if (training.participants.includes(participantId)) {
       return res.status(400).json({ error: "Participant already added." });
     }
 
+    // Add participant to the training session
     training.participants.push(participantId);
+
+    // Save the updated training document
     await training.save();
+
+    // Optionally, you can populate participant details if needed
+    // const populatedTraining = await Training.findById(formationId).populate('participants');
+
     res.status(200).json(training);
   } catch (error) {
     console.error('Error adding participant:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 // Update a training session by ID
 const updateTrainingById = async (req, res) => {

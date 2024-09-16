@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { LoginResponse } from './login-response.model';
 
@@ -78,8 +78,12 @@ export class ApiserviceService {
   getParticipantsByTrainingId(trainingId: string): Observable<any[]> {
     return this._http.get<any[]>(`${this.baseUrl}/formation/participants/${trainingId}`);
   }
-  get_all_formation(): Observable<any> {
-    return this._http.get<any>('http://localhost:5000/api/formation/all');
+  get_all_formation(page: number = 1, limit: number = 10): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+      
+    return this._http.get<any>(`${this.baseUrl}/formation/all`, { params });
   }
   
   deleteFormation(id: string): Observable<any> {
@@ -99,10 +103,10 @@ export class ApiserviceService {
   }
 
   createFormationData(formationData: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    return this._http.post(`${this.baseUrl}/formation/create`, formationData, { headers });
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('accessToken')}`);
+    return this._http.post(`${this.baseUrl}/formation/create`, formationData, {
+      headers}
+    );
   }
  
 

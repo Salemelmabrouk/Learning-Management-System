@@ -3,7 +3,7 @@
     <section class="d-flex flex-wrap mx-auto my-5" style="gap: 1rem;">
       <div class="card" *ngFor="let us of formations">
         <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/Food/8-col/img (5).jpg" class="img-fluid" />
+          <img *ngIf="us.image" [src]="us.image" alt="Formation Image" class="img-fluid card-img" />
           <a href="#!">
             <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
           </a>
@@ -29,5 +29,10 @@
         </div>
       </div>
     </section>
+  </div>
+  <div class="pagination-controls">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage <= 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages">Next</button>
   </div>
 </div>

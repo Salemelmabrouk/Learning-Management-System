@@ -1,15 +1,25 @@
-import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import cloudinary from 'cloudinary';
+import path from 'path';
 
-const testPasswordHashing = async () => {
-  const password = 'SecurePassword123';
+dotenv.config(); // Load environment variables from .env file
 
-  // Generate a new hash
-  const hashedPassword = await bcrypt.hash(password, 10);
-  console.log('Generated Hash:', hashedPassword);
+// Configure Cloudinary
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+console.log(cloudinary.v2.config())
+// Define the file path
+const filePath = path.resolve('test.jpg');
 
-  // Compare the password with the new hash
-  const isMatch = await bcrypt.compare(password, hashedPassword);
-  console.log('Password Match:', isMatch); // Should be true
-};
+// Upload a test image
+cloudinary.v2.uploader.upload(filePath, (error, result) => {
+  if (error) {
+    console.error("Error uploading image:", error);
+  } else {
+    console.log("Upload successful:", result);
+  }
+});
 
-testPasswordHashing();

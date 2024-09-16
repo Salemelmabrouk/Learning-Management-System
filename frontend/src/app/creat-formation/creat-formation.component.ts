@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ApiserviceService } from '../apiservice.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-creat-formation',
@@ -9,28 +9,82 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./creat-formation.component.css']
 })
 export class CreatFormationComponent {
-  createfr = new FormGroup({
-    'name': new FormControl('', Validators.required),
-    'startDate': new FormControl('', Validators.required),
-    'endDate': new FormControl('', Validators.required),
-    'description': new FormControl('', Validators.required),
-    'place': new FormControl('', Validators.required)
-  });
+  createfr: FormGroup;
+  selectedFile: File | null = null; // Variable to hold selected file
 
-  constructor(private router: Router, private service: ApiserviceService) { }
+  constructor(private fb: FormBuilder, private router: Router, private service: ApiserviceService) {
+    this.createfr = this.fb.group({
+      name: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      description: ['', Validators.required],
+      place: ['', Validators.required],
+      trainerId: ['', Validators.required],
+      trainingLevel: ['', Validators.required],
+      trainingCategory: ['', Validators.required],
+      curriculum: this.fb.array([], Validators.required),
+      requirements: this.fb.array([], Validators.required)
+    });
 
-  gotoTraining() {
-    this.router.navigate(["/formation"])
+    this.addCurriculum();
+    this.addRequirement();
   }
 
-  userSubmit() {
+  get curriculum() {
+    return this.createfr.get('curriculum') as FormArray;
+  }
+
+  get requirements() {
+    return this.createfr.get('requirements') as FormArray;
+  }
+
+  addCurriculum() {
+    this.curriculum.push(this.fb.group({
+      title: ['', Validators.required],
+      content: ['', Validators.required]
+    }));
+  }
+
+  removeCurriculum(index: number) {
+    this.curriculum.removeAt(index);
+  }
+
+  addRequirement() {
+    this.requirements.push(this.fb.control('', Validators.required));
+  }
+
+  removeRequirement(index: number) {
+    this.requirements.removeAt(index);
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      this.selectedFile = input.files[0];
+    }
+  }
+  userSubmit(): void {
     if (this.createfr.valid) {
-      console.log('Form Values:', this.createfr.value);
-      this.service.createFormationData(this.createfr.value).subscribe({
+      const formData = new FormData();
+      Object.keys(this.createfr.controls).forEach(key => {
+        const control = this.createfr.get(key);
+        if (control instanceof FormArray) {
+          // Serialize FormArray values as JSON strings
+          formData.append(key, JSON.stringify(control.value));
+        } else {
+          formData.append(key, control?.value);
+        }
+      });
+  
+      if (this.selectedFile) {
+        formData.append('image', this.selectedFile, this.selectedFile.name);
+      }
+  
+      this.service.createFormationData(formData).subscribe({
         next: (res) => {
           console.log('Creation Response:', res);
           this.createfr.reset();
-          this.gotoTraining(); // Navigate after successful creation
+          this.router.navigate(['/formation']); // Navigate to refresh the list
         },
         error: (error) => {
           console.error('Error creating formation:', error);
@@ -39,5 +93,10 @@ export class CreatFormationComponent {
     } else {
       console.log('All fields are required');
     }
+  }
+  
+
+  gotoTraining() {
+    this.router.navigate(['/formation']);
   }
 }

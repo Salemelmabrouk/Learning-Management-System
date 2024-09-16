@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiserviceService } from '../apiservice.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-formation-details',
@@ -47,7 +48,9 @@ export class FormationDetailsComponent implements OnInit {
         data => {
           this.formationDetails = data;
           this.role = data.Role;
-          this.loadTrainerDetails(data.trainer.id);
+          if (data.trainer && data.trainer.id) {
+            this.loadTrainerDetails(data.trainer.id);
+          }
           console.log('Formation details loaded:', this.formationDetails);
         },
         error => {
@@ -80,7 +83,7 @@ export class FormationDetailsComponent implements OnInit {
         },
         error => {
           console.error('Error assigning participant:', error);
-          this.errorMessage = 'Failed to assign participant.';
+          this.errorMessage = 'Failed to assign participant. Please check the server logs for more details.';
         }
       );
     } else {
@@ -88,6 +91,7 @@ export class FormationDetailsComponent implements OnInit {
       this.errorMessage = 'Participant ID or Formation ID is missing.';
     }
   }
+  
 
   rating(rep1: number, rep2: number, rep3: number, rep4: number): number {
     const totalResponses = 4;
