@@ -9,7 +9,7 @@ import { ApiserviceService } from '../apiservice.service';
 export class AccueilComponent implements OnInit {
   message: string = '';
   readData: any[] = [];
-
+  formations: any[] = [];
   constructor(private service: ApiserviceService) { }
 
   ngOnInit(): void {

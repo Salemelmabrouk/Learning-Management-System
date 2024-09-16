@@ -11,6 +11,7 @@ import { AuthService } from '../auth.service';
 export class FormationComponent implements OnInit {
   public mydate: Date = new Date();
   public formations: any[] = [];
+ 
   public Role: string = '';
   public token: string | null = '';
   public errorMessage: string = '';
@@ -33,18 +34,14 @@ export class FormationComponent implements OnInit {
   loadFormations(page: number = this.currentPage): void {
     this.service.get_all_formation(page, this.limit).subscribe({
       next: (data: any) => {
-        console.log('Formations data:', data);
-        if (data.trainings && data.trainings.length > 0) {
+        if (data && Array.isArray(data.trainings)) {
           this.formations = data.trainings.map((formation: any) => {
-            console.log('data',data.trainings)
             formation.rating = formation.rating || 0;
-            formation.imageUrl = formation.image?.url || ''; // Ensure `imageUrl` is a string
-            console.log('Formation imageUrl:', formation.imageUrl);
+            formation.imageUrl = formation.image?.url || '';
             return formation;
           });
           this.currentPage = data.currentPage;
           this.totalPages = data.totalPages;
-
         } else {
           this.errorMessage = 'No formations available.';
         }
@@ -55,6 +52,10 @@ export class FormationComponent implements OnInit {
       }
     });
   }
+  
+ 
+ 
+  
 
   // Handle page change
   changePage(page: number): void {

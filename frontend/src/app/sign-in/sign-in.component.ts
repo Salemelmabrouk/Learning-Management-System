@@ -52,7 +52,7 @@ export class SignInComponent {
           if (response.role === 'admin') {
             this.router.navigate(['/admin-dashboard']);
           } else {
-            this.router.navigate(['/formation']);
+            this.router.navigate(['/accueil']);
           }
         } else {
           Swal.fire({
