@@ -4,9 +4,9 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
 import Training from '../models/formation.js';
 import dotenv from 'dotenv';
-
+import jwt from 'jsonwebtoken';
 dotenv.config();
-
+import asyncHandler from 'express-async-handler';
 const app = express();
 
 // Increase the body size limit for the request
@@ -25,58 +25,39 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage }).single('image');
 
 // Create formation controller
-const createFormation = async (req, res) => {
-  try {
-    const { name, startDate, endDate, description, place, trainingLevel, trainingCategory, curriculum, requirements } = req.body;
+const createFormation = asyncHandler(async (req, res) => {
+  const { name, startDate, endDate, description, place, trainingLevel, trainingCategory, curriculum, requirements } = req.body;
 
-    if (!name || !startDate || !endDate || !place || !trainingCategory) {
-      return res.status(400).json({ message: 'All required fields must be filled.' });
-    }
-
-    let parsedCurriculum = [];
-    let parsedRequirements = [];
-    try {
-      parsedCurriculum = JSON.parse(curriculum || '[]');
-      parsedRequirements = JSON.parse(requirements || '[]');
-    } catch (error) {
-      return res.status(400).json({ message: 'Invalid JSON format for curriculum or requirements' });
-    }
-
-    const trainingData = {
-      name,
-      startDate,
-      endDate,
-      description,
-      place,
-      trainingLevel,
-      trainingCategory,
-      curriculum: parsedCurriculum,
-      requirements: parsedRequirements,
-    };
-
-    // Handle image upload
-    if (req.file) {
-      trainingData.image = req.file.path;  // Cloudinary URL as string
-    } else {
-      return res.status(400).json({ message: 'Image is required' });
-    }
-
-    const newTraining = new Training(trainingData);
-    await newTraining.save();
-    res.status(201).json(newTraining);
-
-  } catch (error) {
-    console.error('Error creating training:', error);
-    res.status(500).json({ message: 'Error creating training', error });
+  if (!name || !startDate || !endDate || !place || !trainingCategory) {
+    return res.status(400).json({ message: 'All required fields must be filled.' });
   }
-};
+
+  const trainerId = req.user.id;
+  const parsedCurriculum = JSON.parse(curriculum || '[]');
+  const parsedRequirements = JSON.parse(requirements || '[]');
+
+  const trainingData = {
+    name, startDate, endDate, description, place, trainingLevel, trainingCategory,
+    curriculum: parsedCurriculum, requirements: parsedRequirements, trainer: trainerId
+  };
+
+  if (req.file) {
+    trainingData.image = req.file.path;
+  } else {
+    return res.status(400).json({ message: 'Image is required' });
+  }
+
+  const newTraining = new Training(trainingData);
+  await newTraining.save();
+  res.status(201).json(newTraining);
+});
 
 
-// Get all training sessions
+
+// Get all training sessions 
 const getAllTrainings = async (req, res) => {
-  // Default values for pagination
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
+  const page = parseInt(req.query.page, 10) || 1; // Default to page 1
+  const limit = parseInt(req.query.limit, 10) || 10; // Default to limit 10
 
   if (page <= 0 || limit <= 0) {
     return res.status(400).json({ error: 'Page and limit must be positive integers.' });
@@ -100,6 +81,9 @@ const getAllTrainings = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch training sessions.' });
   }
 };
+
+
+
 
 
 
@@ -137,45 +121,72 @@ const getAllParticipants = async (req, res) => {
   }
 };
 
-const addParticipant = async (req, res) => {
+// controllers/formation.js
+
+const assignParticipant = asyncHandler(async (req, res) => {
+  const { formationId } = req.params;
+  const userId = req.user.id;
+
   try {
-    const { formationId, participantId } = req.params;
-
-    // Validate IDs
-    if (!formationId || !participantId) {
-      return res.status(400).json({ error: "Formation ID and Participant ID are required." });
+    const formation = await Training.findById(formationId);
+    if (!formation) {
+      return res.status(404).json({ message: 'Formation not found' });
     }
 
-    // Find the training session by ID
-    const training = await Training.findById(formationId);
-    if (!training) {
-      return res.status(404).json({ error: "Training session not found." });
+    if (formation.participants.includes(userId)) {
+      return res.status(400).json({ message: 'User is already assigned' });
     }
 
-    // Log the current training document for debugging
-    console.log('Current Training:', training);
+    formation.participants.push(userId);
+    await formation.save();
 
-    // Check if participant is already added
-    if (training.participants.includes(participantId)) {
-      return res.status(400).json({ error: "Participant already added." });
-    }
-
-    // Add participant to the training session
-    training.participants.push(participantId);
-
-    // Save the updated training document
-    await training.save();
-
-    // Optionally, you can populate participant details if needed
-    // const populatedTraining = await Training.findById(formationId).populate('participants');
-
-    res.status(200).json(training);
+    res.status(200).json({ message: 'Participant added successfully', formation });
   } catch (error) {
-    console.error('Error adding participant:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: `Error adding participant: ${error.message}` });
   }
-};
+});
 
+const desassignParticipant = asyncHandler(async (req, res) => {
+  const { formationId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const formation = await Training.findById(formationId);
+    if (!formation) {
+      return res.status(404).json({ message: 'Formation not found' });
+    }
+
+    if (!formation.participants.includes(userId)) {
+      return res.status(400).json({ message: 'User is not assigned to this formation' });
+    }
+
+    formation.participants = formation.participants.filter(participant => participant.toString() !== userId);
+    await formation.save();
+
+    res.status(200).json({ message: 'Participant removed successfully', formation });
+  } catch (error) {
+    res.status(500).json({ message: `Error removing participant: ${error.message}` });
+  }
+});
+
+
+const checkParticipantAssignment = asyncHandler(async (req, res) => {
+  const { formationId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const formation = await Training.findById(formationId);
+    if (!formation) {
+      return res.status(404).json({ message: 'Formation not found' });
+    }
+
+    const isAssigned = formation.participants.includes(userId);
+
+    res.status(200).json({ assigned: isAssigned });
+  } catch (error) {
+    res.status(500).json({ message: `Error checking participant assignment: ${error.message}` });
+  }
+});
 
 // Update a training session by ID
 const updateTrainingById = async (req, res) => {
@@ -195,6 +206,7 @@ const updateTrainingById = async (req, res) => {
     res.status(200).json(updatedTraining);
   } catch (error) {
     res.status(500).json({ error: "Failed to update the training session." });
+    console.error('Error details:', error.message, error.stack);
   }
 };
 
@@ -288,16 +300,150 @@ const getTrainerByTrainingId = async (req, res) => {
   }
 };
 
+// Add a review
+const addReview = asyncHandler(async (req, res) => {
+  const { trainingId } = req.params;
+  const { rating, review } = req.body;
+  const userId = req.user.id;
+
+  if (!rating || !review) {
+    return res.status(400).json({ message: 'Rating and review are required.' });
+  }
+
+  const training = await Training.findById(trainingId);
+  if (!training) {
+    return res.status(404).json({ message: 'Training session not found.' });
+  }
+
+  const newReview = { user: userId, rating, review };
+  training.reviews.push(newReview);
+  await training.save();
+
+  res.status(201).json(newReview);
+});
+
+// Update a review
+const updateReview = asyncHandler(async (req, res) => {
+  const { trainingId, reviewId } = req.params;
+  const { rating, review } = req.body;
+
+  const training = await Training.findById(trainingId);
+  if (!training) {
+    return res.status(404).json({ message: 'Training session not found.' });
+  }
+
+  const reviewToUpdate = training.reviews.id(reviewId);
+  if (!reviewToUpdate) {
+    return res.status(404).json({ message: 'Review not found.' });
+  }
+
+  reviewToUpdate.rating = rating !== undefined ? rating : reviewToUpdate.rating;
+  reviewToUpdate.review = review !== undefined ? review : reviewToUpdate.review;
+  await training.save();
+
+  res.status(200).json(reviewToUpdate);
+});
+
+// Delete a review
+const deleteReview = asyncHandler(async (req, res) => {
+  const { trainingId, reviewId } = req.params;
+
+  const training = await Training.findById(trainingId);
+  if (!training) {
+    return res.status(404).json({ message: 'Training session not found.' });
+  }
+
+  const reviewToDelete = training.reviews.id(reviewId);
+  if (!reviewToDelete) {
+    return res.status(404).json({ message: 'Review not found.' });
+  }
+
+  reviewToDelete.remove();
+  await training.save();
+
+  res.status(200).json({ message: 'Review deleted successfully.' });
+});
+
+// Get all reviews for a training session
+const getReviews = asyncHandler(async (req, res) => {
+  const { trainingId } = req.params;
+
+  const training = await Training.findById(trainingId).populate('reviews.user', 'username');
+  if (!training) {
+    return res.status(404).json({ message: 'Training session not found.' });
+  }
+
+  res.status(200).json(training.reviews);
+});
+
+// Add to Wishlist
+const addToWishlist = asyncHandler(async (req, res) => {
+  const { trainingId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const training = await Training.findById(trainingId);
+    if (!training) {
+      return res.status(404).json({ message: 'Training session not found' });
+    }
+
+    if (training.wishlist.includes(userId)) {
+      return res.status(400).json({ message: 'Training already in wishlist' });
+    }
+
+    training.wishlist.push(userId);
+    await training.save();
+
+    res.status(200).json({ message: 'Added to wishlist', training });
+  } catch (error) {
+    res.status(500).json({ message: `Error adding to wishlist: ${error.message}` });
+  }
+});
+
+// Remove from Wishlist
+const removeFromWishlist = asyncHandler(async (req, res) => {
+  const { trainingId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const training = await Training.findById(trainingId);
+    if (!training) {
+      return res.status(404).json({ message: 'Training session not found' });
+    }
+
+    if (!training.wishlist.includes(userId)) {
+      return res.status(400).json({ message: 'Training not in wishlist' });
+    }
+
+    training.wishlist = training.wishlist.filter(id => id.toString() !== userId);
+    await training.save();
+
+    res.status(200).json({ message: 'Removed from wishlist', training });
+  } catch (error) {
+    res.status(500).json({ message: `Error removing from wishlist: ${error.message}` });
+  }
+});
+
+
+
 export {
   createFormation,
   getAllTrainings,
   getTrainingById,
   getAllParticipants,
-  addParticipant,
+  assignParticipant,
+ 
+  desassignParticipant,
   updateTrainingById,
   deleteTrainingById,
   getAllParticipantsInAllTrainings,
   getTrainingsByTrainerId,
   updateUserRoleToFormateur,
-  getTrainerByTrainingId
+  getTrainerByTrainingId,
+  checkParticipantAssignment,addReview,
+  updateReview,
+  deleteReview,
+  getReviews,
+  addToWishlist,
+  removeFromWishlist
 };

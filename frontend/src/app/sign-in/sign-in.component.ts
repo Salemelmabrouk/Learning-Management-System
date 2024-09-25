@@ -50,9 +50,9 @@ export class SignInComponent {
 
           // Role-based redirection
           if (response.role === 'admin') {
-            this.router.navigate(['/admin-dashboard']);
+            this.router.navigate(['/all-trainings']);
           } else {
-            this.router.navigate(['/accueil']);
+            this.router.navigate(['/all-trainings']);
           }
         } else {
           Swal.fire({

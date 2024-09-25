@@ -8,16 +8,12 @@ import { Emitters } from './emitter/emitter';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  
-  private tokenKey = 'authToken';
+export class AuthService { 
+   private tokenKey = 'authToken';
   private apiUrl = 'http://localhost:5000/api/users';
- 
-  // BehaviorSubject to keep track of authentication status
-  authenticationStatus = new BehaviorSubject(this.isLoggedIn());
-
-  constructor(private http: HttpClient, private router: Router) { }
-
+    // BehaviorSubject to keep track of authentication status
+  authenticationStatus = new BehaviorSubject(this.isLoggedIn()); 
+   constructor(private http: HttpClient, private router: Router) { }
   // Method to handle user login
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password })
@@ -25,17 +21,23 @@ export class AuthService {
         map((response: any) => {
           if (response.token) {
             this.saveToken(response.token);
-        
- 
-            // Extract and save userId
             const decodedToken: any = jwtDecode(response.token);
-             
-            
-           
-  
             this.authenticationStatus.next(true);
             Emitters.authEmitter.emit(true);
-            this.router.navigate(['/formation']);
+  
+            // Redirect based on user role
+            const userRole = decodedToken.role; // Get the role from the token
+            let redirectTo = '/all-trainings'; // Default redirect path
+  
+            if (userRole === 'ADMIN') {
+              redirectTo = '/all-trainings';
+            } else if (userRole === 'formateur') {
+              redirectTo = '/all-trainings';
+            } else if (userRole === 'participant') {
+              redirectTo = '/all-trainings';
+            }
+  
+            this.router.navigate([redirectTo]);
           }
           return response;
         }),
@@ -45,10 +47,7 @@ export class AuthService {
       );
   }
   
-  
-  
-  // Save token
- 
+  // Save token 
   saveToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
     
@@ -65,8 +64,7 @@ export class AuthService {
       }
     } catch (error) {
       console.error('Error decoding token:', error);
-    }
-    
+    } 
     console.log('Token saved:', token);
   }
   // Retrieve Token
@@ -74,33 +72,26 @@ export class AuthService {
     const token = localStorage.getItem(this.tokenKey);
     console.log('Retrieved Token:', token);
     return token;
-  }
-
-  // Method to extract user ID from token
+  }   // Method to extract user ID from token
   getUserId(): string | null {
     const token = this.getToken();
     if (!token) {
       return null;
-    }
-
+    } 
     // Decode the token payload (which is base64-encoded)
     const payload = JSON.parse(atob(token.split('.')[1])); // Splits the token into header, payload, and signature
 
     // Assuming the user ID is stored as `id` in the payload
     const userId = payload.id || null;
-    console.log('User ID:', userId);
-    localStorage.setItem('userId', userId);
-    return userId;
-  }
-    
- 
   
+    localStorage.setItem('userId', userId);
+    console.log('User ID:', userId);
+    return userId;
+  } 
   // Method to get user ID from local storage
   getStoredUserId(): string | null {
     return localStorage.getItem('userId');
-  }
-  
- 
+  } 
   // Method to check if user is logged in
   isLoggedIn(): boolean {
     const token = this.getToken();
@@ -126,14 +117,12 @@ export class AuthService {
       console.error('Error decoding token:', error);
       return true; // Consider token expired if decoding fails
     }
-  }
-  
+  }  
   getUserRole(): string | null {
     const token = this.getToken();
     if (!token) {
       return null;
     }
-
     // Decode the token payload (which is base64-encoded)
     const payload = JSON.parse(atob(token.split('.')[1])); // Splits the token into header, payload, and signature
 
@@ -150,4 +139,6 @@ export class AuthService {
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN';
   }
+
+  
 }

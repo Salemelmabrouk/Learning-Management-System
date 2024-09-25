@@ -1,6 +1,5 @@
+// userModel.js
 import mongoose from 'mongoose';
-
- 
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -18,12 +17,15 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['ADMIN', 'participant', 'formateur'], // Add 'formateur' role here
+    enum: ['ADMIN', 'participant', 'formateur'],
     default: 'participant',
   },
   name: {
-    type: String, // Make sure this field exists
+    type: String,
   },
+  assignedFormations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Training' }],
+
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Training' }],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -36,4 +38,3 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 export default User;
-

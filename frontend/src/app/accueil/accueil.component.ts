@@ -7,14 +7,17 @@ import { ApiserviceService } from '../apiservice.service';
   styleUrls: ['./accueil.component.css']
 })
 export class AccueilComponent implements OnInit {
+ 
   message: string = '';
   readData: any[] = [];
   formations: any[] = [];
+
   constructor(private service: ApiserviceService) { }
 
   ngOnInit(): void {
-    this.service.get_all_formation().subscribe((res: any) => {
-      this.readData = res;
+    let page = 1;
+    this.service.get_all_formation(page).subscribe((res: any) => {
+      this.formations = res;
     });
   }
 }

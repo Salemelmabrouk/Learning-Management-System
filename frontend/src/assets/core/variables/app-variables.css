@@ -1,0 +1,173 @@
+/* Importing Bootstrap's CSS equivalent */
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css");
+
+/* Vertical Menu */
+.menu-expanded-width-sm {
+  width: 220px;
+}
+.menu-expanded-width {
+  width: 250px;
+}
+.menu-expanded-width-lg {
+  width: 280px;
+}
+.menu-collapsed-width {
+  width: 60px;
+}
+
+/* Horizontal Menu */
+.menu-active-bg {
+  background-color: #E7E9EC;
+}
+
+html {
+  font-size: 15px;
+}
+
+/* Avatar */
+.avatar {
+  background-color: #E0E0E0;
+  color: #616161;
+}
+.avatar-size-xl {
+  width: 70px;
+  height: 70px;
+}
+.avatar-size-lg {
+  width: 50px;
+  height: 50px;
+}
+.avatar-size-md {
+  width: 40px;
+  height: 40px;
+}
+.avatar-size-sm {
+  width: 24px;
+  height: 24px;
+}
+.avatar-status-size {
+  width: 11px;
+  height: 11px;
+}
+.avatar-status-size-lg {
+  width: 17px;
+  height: 17px;
+}
+
+/* Shadows */
+.shadow-umbra-opacity {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+.shadow-penumbra-opacity {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.14);
+}
+.shadow-ambient-opacity {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Social Colors */
+.social-facebook {
+  color: #3b5998;
+}
+.social-twitter {
+  color: #55acee;
+}
+.social-pinterest {
+  color: #cc2127;
+}
+.social-google {
+  color: #dd4b39;
+}
+.social-linkedin {
+  color: #0976b4;
+}
+.social-dribbble {
+  color: #ea4c89;
+}
+.social-github {
+  color: #333333;
+}
+.social-youtube {
+  color: #e52d27;
+}
+.social-instagram {
+  color: #125688;
+}
+.social-reddit {
+  color: #ff4500;
+}
+.social-tumblr {
+  color: #35465c;
+}
+.social-behance {
+  color: #1769ff;
+}
+
+/* Dark Layout */
+.bg-color-dark {
+  background-color: #101010;
+}
+.dl-text-color {
+  color: #B2B1B5;
+}
+.dl-bg-color {
+  background-color: #1E1E1E;
+}
+.dl-headings-color {
+  color: #BFBEC2;
+}
+.dl-text-muted-color {
+  color: #848484;
+}
+.dl-disabled-color {
+  color: #626164;
+}
+.dl-border-color {
+  border-color: #474748;
+}
+.dl-card-shadow {
+  box-shadow: -8px 8px 14px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Transparent Layout */
+.tl-text-color {
+  color: #D6D5D8;
+}
+.tl-headings-color {
+  color: #E9E9EA;
+}
+.tl-bg-color {
+  background-color: transparent;
+}
+.tl-text-muted-color {
+  color: #C3C2C5;
+}
+.tl-disabled-color {
+  color: #9E9E9E;
+}
+.tl-border-color {
+  border-color: rgba(238, 238, 238, 0.2);
+}
+.tl-card-bg-color {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Glassmorphism Backgrounds */
+.bg-glass-hibiscus {
+  background: linear-gradient(to right bottom, #f05f57, #c83d5c, #99245a, #671351, #360940);
+}
+.bg-glass-purple-pizzazz {
+  background: linear-gradient(to right bottom, #662d86, #8b2a8a, #ae2389, #cf1d83, #ed1e79);
+}
+.bg-glass-blue-lagoon {
+  background: linear-gradient(to right bottom, #144e68, #006d83, #008d92, #00ad91, #57ca85);
+}
+.bg-glass-electric-violet {
+  background: linear-gradient(to left top, #4a00e0, #600de0, #7119e1, #8023e1, #8e2de2);
+}
+.bg-glass-portage {
+  background: linear-gradient(to left top, #97abff, #798ce5, #5b6ecb, #3b51b1, #123597);
+}
+.bg-glass-tundora {
+  background: linear-gradient(to left top, #ef4673, #ffc846);
+}

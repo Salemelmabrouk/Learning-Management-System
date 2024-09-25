@@ -8,34 +8,32 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import busboy from 'connect-busboy';
+
 dotenv.config();
 
 const app = express();
 
+// Middleware Setup
 app.use(helmet());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true,
+}));
 
 const bb = busboy({
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB
   }
 });
-
 app.use(bb);
 
-// Middlewares
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(busboy());
-app.use(cors({
-  origin: 'http://localhost:4200',
-  credentials: true,
-}));
 
 // Routes
 app.use('/api/users', userRoute);
-app.use("/api/feedback", feedbackRoute);
-app.use("/api/formation", formationRoute);
+app.use('/api/feedback', feedbackRoute);
+app.use('/api/formation', formationRoute);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

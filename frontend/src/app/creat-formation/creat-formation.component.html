@@ -24,18 +24,13 @@
             <label for="place">Place of Training</label>
           </div>
 
-		  <h3>Image Upload</h3>
-          <input type="file" (change)="onImageSelected($event)">
-
-          <div *ngIf="selectedFile">
+          <h3>Image Upload</h3>
+          <input type="file" (change)="onFileSelected($event)" />
+          <div *ngIf="imagePreview">
             <h4>Uploaded Image Preview:</h4>
-            <img [src]="selectedFile" alt="Uploaded Image" style="max-width: 100%; height: auto;">
+            <img [src]="imagePreview" alt="Image preview" style="max-width: 300px; max-height: 300px;" />
           </div>
-
-          <div class="form-floating">
-            <input type="text" class="form-control" formControlName="trainerId" placeholder="Trainer ID" id="trainerId" required>
-            <label for="trainerId">Trainer ID</label>
-          </div>
+    
 
           <div class="form-floating">
             <input type="text" class="form-control" formControlName="trainingLevel" placeholder="Training Level" id="trainingLevel" required>

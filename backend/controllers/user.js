@@ -231,7 +231,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Invalid user ID format" });
@@ -275,6 +275,155 @@ const getUserByRole = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+const addToWishlist = async (req, res) => {
+  const userId = req.user.id; // Assuming you have user ID from the authenticated token
+  const { formationId } = req.params;
+
+  try {
+      // Fetch the user
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).json({ success: false, message: 'User not found.' });
+      }
+
+      // Check if the formation is already in the wishlist
+      if (user.wishlist.includes(formationId)) {
+          return res.status(400).json({ success: false, message: 'Formation already in wishlist' });
+      }
+
+      // Add the formation to the wishlist
+      user.wishlist.push(formationId);
+      await user.save();
+
+      return res.status(200).json({
+          success: true,
+          message: 'Formation added to wishlist successfully.',
+          data: user.wishlist
+      });
+  } catch (error) {
+      console.error('Error adding formation to wishlist:', error);
+      return res.status(500).json({ success: false, message: 'Failed to add formation to wishlist.' });
+  }
+};
+
+
+
+const removeFromWishlist = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const formationId = req.params.formationId; // Get formationId from the URL parameters
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.wishlist.includes(formationId)) {
+      return res.status(400).json({ error: 'Formation not in wishlist' });
+    }
+
+    user.wishlist = user.wishlist.filter(id => id.toString() !== formationId);
+    await user.save();
+
+    res.status(200).json({ message: 'Formation removed from wishlist', wishlist: user.wishlist });
+  } catch (error) {
+    console.error('Error removing from wishlist:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+const getWishlist = async (req, res) => {
+  try {
+    const userId = "66f2c1594624380807666eab"; // Hardcoded ID for testing
+const isValidId = mongoose.Types.ObjectId.isValid(userId);
+console.log('Is valid ObjectId:', isValidId); 
+    // Validate user ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('Invalid user ID format:', userId); // Log if it's invalid
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
+    const user = await User.findById(userId).populate('wishlist');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ wishlist: user.wishlist });
+  } catch (error) {
+    console.error('Error fetching wishlist:', error.message);
+    return res.status(500).json({ message: 'Error fetching wishlist' });
+  }
+};
+
+
+
+
+
+
+
+const isTrainingInWishlist = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get user ID from the JWT token
+    const formationId = req.params.formationId; // Get formation ID from URL parameters
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isInWishlist = user.wishlist.includes(formationId);
+
+    res.status(200).json({ 
+      isInWishlist 
+    });
+  } catch (error) {
+    console.error('Error checking wishlist:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+
+
+const getWishlistAndCheckFormation = async (req, res) => {
+    const userId = req.user.id; // Assuming you have user ID from the authenticated token
+    const { formationId } = req.params;
+
+    try {
+        // Fetch the user's data, including the wishlist
+        const user = await User.findById(userId).populate('wishlist'); // Populate to get full training data
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found.' });
+        }
+
+        // Check if the formationId is in the user's wishlist
+        const isInWishlist = user.wishlist.some(item => item._id.toString() === formationId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Wishlist retrieved successfully.',
+            data: {
+                wishlist: user.wishlist,
+                isInWishlist
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        return res.status(500).json({ success: false, message: 'Failed to retrieve wishlist.' });
+    }
+};
+
+
+ 
+
+
 export {
   signupUser,
   loginUser,
@@ -285,4 +434,10 @@ export {
   getUserById,
   getUserFormations,
   getUserByRole,
+  addToWishlist,
+removeFromWishlist,
+getWishlist,
+isTrainingInWishlist,
+getWishlistAndCheckFormation,
+ 
 };

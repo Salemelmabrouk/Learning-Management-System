@@ -1,3 +1,15 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li *ngFor="let breadcrumb of breadcrumbs; let last = last" 
+        class="breadcrumb-item" 
+        [ngClass]="{ 'active': last }">
+      <a *ngIf="!last" [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
+      <span *ngIf="last">{{ breadcrumb.label }}</span>
+    </li>
+  </ol>
+</nav>
+
+
 <div *ngIf="formations.length > 0; else noData">
   <h2>Your Formations</h2>
   <div class="container">
@@ -5,7 +17,7 @@
       <!-- Loop through the formations array -->
       <div class="card d-flex flex-wrap mx-auto" *ngFor="let us of formations">
         <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/Food/8-col/img (5).jpg" class="img-fluid" />
+          <img [src]="us.image" class="img-fluid card-img" [alt]="us.name" />
           <a href="#!">
             <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
           </a>
@@ -29,7 +41,7 @@
 
           <a href="#!" class="btn btn-link link-secondary p-md-1 mb-0">Button</a>
         </div>
-        <button type="button" class="btn btn-danger btn-floating" (click)="deleteFormation(us._id)">
+        <button (click)="deassignParticipant(us.id)" class="btn btn-danger">
           <i class="fas fa-trash"></i>
         </button>
       </div>

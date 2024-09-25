@@ -25,6 +25,9 @@ import { ApiserviceService } from './apiservice.service';
 import { AuthInterceptor } from './auth.interceptor';
 import { FooterComponent } from './footer/footer.component';
 import { HomeComponent } from './home/home.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TruncatePipe } from './formation/truncate.pipe';
 
 @NgModule({
   declarations: [
@@ -41,12 +44,17 @@ import { HomeComponent } from './home/home.component';
     AdminDashboardComponent,
     FormationDetailsComponent,
     FooterComponent,
-    HomeComponent
+    HomeComponent,
+    TruncatePipe
   ],
   imports: [
     CommonModule,
     BrowserModule,
     AppRoutingModule,
+    BrowserAnimationsModule, 
+    ToastrModule.forRoot({   positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      timeOut: 3000}), 
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,

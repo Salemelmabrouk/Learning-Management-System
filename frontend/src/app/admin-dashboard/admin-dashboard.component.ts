@@ -63,8 +63,8 @@ export class AdminDashboardComponent implements OnInit {
         }
       });
   
-       
-      this.apiService.get_all_formation().subscribe({
+      let page = 1;
+      this.apiService.get_all_formation(page).subscribe({
         next: (formations) => {
           console.log('Formations data:', formations);
           this.formationCount = formations.length;

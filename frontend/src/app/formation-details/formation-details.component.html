@@ -1,7 +1,7 @@
-<section class="bg-light py-3 py-md-5 py-xl-8">
+   <!-- <section class="bg-light py-3 py-md-5 py-xl-8">
     <div class="container">
       <div class="row gy-4 gy-lg-0">
-        <!-- Sidebar with trainer info -->
+     Sidebar with trainer info 
         <div class="col-12 col-lg-4 col-xl-3">
           <div class="card widget-card border-light shadow-sm">
             <div class="card-header text-bg-primary">
@@ -23,27 +23,33 @@
                   <h6 class="m-0">Followers</h6>
                   <span>7,854</span>
                 </li>
-                <!-- Additional trainer stats here -->
+            
               </ul>
             </div>
           </div>
         </div>
-  
-        <!-- Formation details -->
+ 
         <div class="col-12 col-lg-8 col-xl-9">
           <div class="card border-light shadow-sm">
             <div class="card-header text-bg-primary">
               {{ formationDetails?.name || 'Unknown Formation' }}
             </div>
             <div class="card-body">
-              <h5 class="card-title">{{ formationDetails?.description || 'No description' }}</h5>
+
+            <div class="text-center mb-8"><h1> {{ formationDetails?.name  }}</h1></div>
+            <img *ngIf="formationDetails?.image" [src]="formationDetails.image" class="w-full max-h-48 mb-3" alt="Formation Image" />
+
+              <p  >{{ formationDetails?.description || 'No description' }}</p>
               
               <p class="card-text">Rating: {{ formationDetails?.rating || 0 }} / 5</p>
+
+              What Will Learn
               <button class="btn btn-primary" (click)="assignParticipant()">Assign Participant</button>
+              <button class="btn btn-danger" (click)="deassignParticipant()">Cancel</button>
+              
             </div>
           </div>
-  
-          <!-- Feedback form -->
+ 
           <div class="card border-light shadow-sm mt-4">
             <div class="card-header text-bg-primary">
               Leave Feedback
@@ -61,11 +67,14 @@
                 </div>
                 <div class="mb-3">
                   <label for="rating" class="form-label">Rating</label>
-                  <ngx-star-rating 
-                    formControlName="rating" 
-                    [maxRating]="5" 
-                    [readOnly]="false"
-                  ></ngx-star-rating>
+                  <div class="stars">
+                    <ngx-star-rating 
+                      formControlName="rating" 
+                      [maxRating]="5" 
+                      [readOnly]="false"
+                      class="stars"
+                    ></ngx-star-rating>
+                  </div>
                 </div>
                 <button class="btn btn-primary" (click)="feedbacksubmit()">Submit Feedback</button>
               </form>
@@ -74,4 +83,147 @@
         </div>
       </div>
     </div>
-  </section>
+  </section>-->
+  <nav *ngIf="breadcrumbs.length" class="mb-4">
+    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+      <ng-container *ngIf="!last">
+        <a [routerLink]="breadcrumb.url" class="text-blue-500 hover:underline">{{ breadcrumb.label }}</a> &gt; 
+      </ng-container>
+      <ng-container *ngIf="last">
+        <span class="font-semibold">{{ breadcrumb.label }}</span>
+      </ng-container>
+    </ng-container>
+  </nav>
+  
+  <div class="container mx-auto py-8 bg-gray-100">
+    <div class="flex gap-6"> <!-- Adjust the gap between the sections -->
+      
+      <!-- Left Section -->
+      <div class="flex-none w-1/4 lg:w-1/4"> <!-- Set width -->
+        <div class="bg-white shadow-lg rounded-lg p-6"> <!-- Increased padding -->
+          <div class="flex flex-col items-center">
+            <img src="" class="w-32 h-32 bg-gray-300 rounded-full mb-4" />
+            <h1 class="text-xl font-bold">John Doe</h1>
+            <p class="text-gray-700">Software Developer</p>
+            <div class="mt-4 flex flex-wrap gap-4 justify-center">
+              <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Contact</a>
+              <a href="#" class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded">Resume</a>
+            </div>
+          </div>
+          <hr class="my-6 border-t border-gray-300">
+          <div class="flex flex-col">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title">Skills</h4>
+                </div>
+                <div class="card-body">
+                  <span class="badge badge-pill bg-light-primary mr-1 mb-1">Product Design</span>
+                  <span class="badge badge-pill bg-light-secondary mr-1 mb-1">Technology</span>
+                  <span class="badge badge-pill bg-light-warning mr-1 mb-1">Wordpress</span>
+                  <span class="badge badge-pill bg-light-info mr-1 mb-1">Sketch</span>
+                  <span class="badge badge-pill bg-light-danger mr-1 mb-1">Mobile App</span>
+                  <span class="badge badge-pill bg-light-primary mr-1 mb-1">UI</span>
+                  <span class="badge badge-pill bg-light-secondary mr-1 mb-1">UX</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+ 
+    <!-- Right Section -->
+    <div class="flex-none w-3/4 lg:w-3/4"> <!-- Right Section -->
+      <div class="bg-white shadow-lg rounded-lg p-6" *ngIf="!loading && formationDetails">
+        <h2 class="text-xl font-bold mb-4">{{ formationDetails?.name }}</h2>
+        <img [src]="formationDetails?.image" class="w-full h-64 bg-gray-300" />
+        <p class="text-gray-700 mt-3">{{ formationDetails.description }}</p>
+        <span class="text-gray-700">Rating: {{ formationDetails.rating }} / 5</span>
+        <hr class="my-6 border-t border-gray-600">
+        
+        <h2 class="text-xl font-bold mt-6 mb-4">Requirements</h2>
+        <p><strong>Training Level:</strong> {{ formationDetails.trainingLevel }}</p>
+        <div class="mb-6">
+          <div class="flex justify-between flex-wrap gap-2 w-full">
+            <span class="text-gray-700 font-bold">{{ formationDetails.requirements }}</span>
+            <p>
+              <span class="text-gray-700 mr-2">at ABC Company</span>
+              <span class="text-gray-700">2017 - 2019</span>
+            </p>
+          </div>
+          <p class="mt-2">Lorem ipsum dolor sit amet...</p>
+        </div>
+        
+        <hr class="my-6 border-t border-gray-600">
+        
+        <div class="mb-6">
+          <h3>Curriculum:</h3>
+          <ul>
+            <li *ngFor="let item of formationDetails.curriculum">
+              <h4>{{ item.title }}</h4>
+              <p>{{ item.content }}</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    
+      <!-- Error Message -->
+      <div *ngIf="!loading && errorMessage" class="text-red-600">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+
+    
+<div class="container">
+  <div class="info">
+    <h1>Article News Card</h1><span>Made with <i class='fa fa-heart animated infinite pulse'></i> by <a href='http://andy.design'>Andy Tran</a> | Designed by <a href='http://justinkwak.com'>JustinKwak</a></span>
+  </div>
+  <!-- Normal Demo-->
+  <div class="column">
+    <div class="demo-title">Normal</div>
+    <!-- Post-->
+    <div class="post-module">
+      <!-- Thumbnail-->
+      <div class="thumbnail">
+        <div class="date">
+          <div class="day">27</div>
+          <div class="month">Mar</div>
+        </div><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/169963/photo-1429043794791-eb8f26f44081.jpeg"/>
+      </div>
+      <!-- Post Content-->
+      <div class="post-content">
+        <div class="category">Photos</div>
+        <h1 class="title">City Lights in New York</h1>
+        <h2 class="sub_title">The city that never sleeps.</h2>
+        <p class="description">New York, the largest city in the U.S., is an architectural marvel with plenty of historic monuments, magnificent buildings and countless dazzling skyscrapers.</p>
+        <div class="post-meta"><span class="timestamp"><i class="fa fa-clock-">o</i>
+            6 mins ago</span><span class="comments"><i class="fa fa-comments"></i><a href="#">39 comments</a></span></div>
+      </div>
+    </div>
+  </div>
+  <!-- Hover Demo-->
+  <div class="column">
+    <div class="demo-title">Hover</div>
+    <!-- Post-->
+    <div class="post-module hover">
+      <!-- Thumbnail-->
+      <div class="thumbnail">
+        <div class="date">
+          <div class="day">27</div>
+          <div class="month">Mar</div>
+        </div><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/169963/photo-1429043794791-eb8f26f44081.jpeg"/>
+      </div>
+      <!-- Post Content-->
+      <div class="post-content">
+        <div class="category">Photos</div>
+        <h1 class="title">City Lights in New York</h1>
+        <h2 class="sub_title">The city that never sleeps.</h2>
+        <p class="description">New York, the largest city in the U.S., is an architectural marvel with plenty of historic monuments, magnificent buildings and countless dazzling skyscrapers.</p>
+        <div class="post-meta"><span class="timestamp"><i class="fa fa-clock-o"></i>
+            6 mins ago</span><span class="comments"><i class="fa fa-comments"></i><a href="#">39 comments</a></span></div>
+      </div>
+    </div>
+  </div>
+</div>

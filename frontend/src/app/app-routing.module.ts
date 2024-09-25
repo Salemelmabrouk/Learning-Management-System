@@ -8,27 +8,25 @@ import { CreatFormationComponent } from './creat-formation/creat-formation.compo
 import { FormationComponent } from './formation/formation.component';
 import { EditFormationComponent } from './edit-formation/edit-formation.component';
 import { UserFormationsComponent } from './user-formations/user-formations.component';
-import { AuthGuard } from './AuthGuard'; // Ensure the path is correct
+import { AuthGuard } from './AuthGuard';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { FormationDetailsComponent } from './formation-details/formation-details.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   { path: 'sign-in', component: SignInComponent },
-  { path: 'accueil', component: AccueilComponent },
-  { path: 'home', component: HomeComponent ,canActivate: [AuthGuard] },
-  { path: 'sign-up', component: SignUpComponent },
-  { path: 'feedback', component: FeedbackComponent, canActivate: [AuthGuard] },  // Optional: Protect this route if necessary
-  { path: 'create-formation', component: CreatFormationComponent, canActivate: [AuthGuard] },
-  { path: 'formation', component: FormationComponent, canActivate: [AuthGuard] },
-  { path: 'edit-formation', component: EditFormationComponent, canActivate: [AuthGuard] },
-  { path: 'user-formations', component: UserFormationsComponent, canActivate: [AuthGuard] },
-  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
-  { path: 'formation/:id', component: FormationDetailsComponent, canActivate: [AuthGuard] }, // Add AuthGuard if formation details need protection
-  { path: '**', redirectTo: 'sign-in' },  // Wildcard route should be the last entry
+  { path: 'accueil', component: AccueilComponent, data: { breadcrumb: 'accueil' } },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard], data: { breadcrumb: 'home' } },
+  { path: 'sign-up', component: SignUpComponent, data: { breadcrumb: 'sign-up' } },
+  { path: 'feedback', component: FeedbackComponent, canActivate: [AuthGuard] },
+  { path: 'create-formation', component: CreatFormationComponent, canActivate: [AuthGuard], data: { breadcrumb: 'create-training' } },
+  { path: 'all-trainings', component: FormationComponent, canActivate: [AuthGuard] },
+  { path: 'edit-formation', component: EditFormationComponent, canActivate: [AuthGuard], data: { breadcrumb: 'edit-training' } },
+  { path: 'user-trainings', component: UserFormationsComponent, canActivate: [AuthGuard], data: { breadcrumb: 'user-trainings' } },
+  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard], data: { breadcrumb: 'admin-dashboard' } },
+  { path: 'all-trainings/:id', component: FormationDetailsComponent, canActivate: [AuthGuard], data: { breadcrumb: 'formation-details' } },
+  { path: '**', redirectTo: 'sign-in' },
 ];
-
- 
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiserviceService } from '../apiservice.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import { HttpHeaders } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BreadcrumbService } from 'src/services/breadcrumb.service';
 
 @Component({
   selector: 'app-formation-details',
@@ -12,59 +13,68 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class FormationDetailsComponent implements OnInit {
   formationId: string = '';
-  formationDetails: any = {
-    rating: 4 // Example rating value
-  };
+  participantId: string = '';
+  formationDetails: any;
   trainerDetails: any;
   errorMessage: string = '';
   feedback!: FormGroup;
   role: string = '';
   token: string | null = '';
+  mydate: any;
+  isAssigned: boolean = false;
+  breadcrumbs: { url: string, label: string }[] = [];
+  loading: boolean = true;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private route: ActivatedRoute,
     private service: ApiserviceService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit(): void {
     this.token = this.authService.getToken();
-
     this.feedback = this.fb.group({
       comment: ['', Validators.required],
-      rating: [0, Validators.required] // Example form control
+      rating: [0, Validators.required]
     });
 
-    this.route.paramMap.subscribe(params => {
-      this.formationId = params.get('id') || '';
-      this.loadFormationDetails();
+    this.breadcrumbService.getBreadcrumbs().subscribe(breadcrumbs => {
+      this.breadcrumbs = [
+        { url: '/home', label: 'Home' },
+        { url: '/formation/1', label: 'Formation Details' }
+      ];
+
+      this.route.paramMap.subscribe(params => {
+        this.formationId = params.get('id') || '';
+        this.fetchFormationDetails(this.formationId);
+      });
     });
   }
 
-  loadFormationDetails() {
-    if (this.formationId) {
-      this.service.get_formation_by_ID(this.formationId).subscribe(
-        data => {
-          this.formationDetails = data;
-          this.role = data.Role;
-          if (data.trainer && data.trainer.id) {
-            this.loadTrainerDetails(data.trainer.id);
-          }
-          console.log('Formation details loaded:', this.formationDetails);
-        },
-        error => {
-          console.error('Error fetching formation details:', error);
-          this.errorMessage = 'Failed to load formation details.';
-        }
-      );
-    }
+  fetchFormationDetails(id: string): void {
+    this.loading = true;
+    this.service.get_formation_by_ID(id).subscribe(
+      (data) => {
+        this.formationDetails = data;
+        console.log(this.formationDetails); // Check the fetched data
+        this.loading = false;
+      },
+      (error) => {
+        this.errorMessage = 'Failed to load formation details.';
+        this.loading = false;
+      }
+    );
   }
 
   loadTrainerDetails(trainerId: string) {
     this.service.get_compte_ID(trainerId).subscribe(
       data => {
         this.trainerDetails = data;
+        this.formationId = data.id;
         console.log('Trainer details loaded:', this.trainerDetails);
       },
       error => {
@@ -76,9 +86,12 @@ export class FormationDetailsComponent implements OnInit {
 
   assignParticipant() {
     const participantId = this.authService.getUserId();
+    console.log('Assigning participant:', participantId);
+    console.log('To formation:', this.formationId);
     if (participantId && this.formationId) {
       this.service.assignParticipantToFormation(this.formationId, participantId).subscribe(
         response => {
+          this.toastr.success('Participant assigned successfully');
           console.log('Participant assigned successfully', response);
         },
         error => {
@@ -91,21 +104,71 @@ export class FormationDetailsComponent implements OnInit {
       this.errorMessage = 'Participant ID or Formation ID is missing.';
     }
   }
-  
 
-  rating(rep1: number, rep2: number, rep3: number, rep4: number): number {
-    const totalResponses = 4;
-    const totalScore = rep1 + rep2 + rep3 + rep4;
-    return (totalScore / (totalResponses * 5)) * 100;
+  removeParticipant(): void {
+    const participantId = this.authService.getUserId();
+    if (participantId && this.formationId) {
+      this.service.deassignParticipantFromFormation(this.formationId, participantId).subscribe(
+        response => {
+          console.log('Participant removed:', response);
+          this.checkAssignment(); // Refresh assignment status
+        },
+        error => {
+          console.error('Error removing participant:', error);
+        }
+      );
+    }
   }
 
-  feedbacksubmit(): void {
+  deassignParticipant(): void {
+    const participantId = this.authService.getUserId(); // Get the participant ID from AuthService
+
+    if (!participantId) {
+      console.error('No participant ID found.');
+      return;
+    }
+
+    this.service.deassignParticipantFromFormation(this.formationId, participantId).subscribe(
+      response => {
+        this.toastr.info('Participant successfully deassigned');
+        console.log('Participant successfully deassigned:', response);
+      },
+      error => {
+        console.error('Error deassigning participant:', error);
+      }
+    );
+  }
+
+  feedbackSubmit(): void {
     if (this.feedback.valid) {
       const feedbackData = this.feedback.value;
-      console.log('Feedback submitted:', feedbackData);
-      // Handle form submission
+      this.service.create_feedback(feedbackData).subscribe(
+        response => {
+          this.toastr.success('Feedback submitted successfully');
+          this.feedback.reset(); // Reset the form on success
+        },
+        error => {
+          console.error('Error submitting feedback:', error);
+          this.toastr.error('Failed to submit feedback');
+        }
+      );
     } else {
       console.log('Feedback form is invalid');
     }
+  }
+
+  checkAssignment(): void {
+    this.service.checkParticipantAssignment(this.formationId).subscribe(
+      response => {
+        this.isAssigned = response.assigned;
+      },
+      error => {
+        console.error('Error checking participant assignment:', error);
+      }
+    );
+  }
+
+  isTodayEndDate(endDate: string): boolean {
+    return new Date(this.mydate.toDateString()) === new Date(new Date(endDate).toDateString());
   }
 }

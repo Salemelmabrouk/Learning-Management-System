@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ApiserviceService } from '../apiservice.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-creat-formation',
@@ -11,15 +12,15 @@ import { ApiserviceService } from '../apiservice.service';
 export class CreatFormationComponent {
   createfr: FormGroup;
   selectedFile: File | null = null; // Variable to hold selected file
-
-  constructor(private fb: FormBuilder, private router: Router, private service: ApiserviceService) {
+  imagePreview: string | ArrayBuffer | null = null; 
+  constructor(private fb: FormBuilder, private router: Router, private service: ApiserviceService, private toastr: ToastrService) {
     this.createfr = this.fb.group({
       name: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
       description: ['', Validators.required],
       place: ['', Validators.required],
-      trainerId: ['', Validators.required],
+  
       trainingLevel: ['', Validators.required],
       trainingCategory: ['', Validators.required],
       curriculum: this.fb.array([], Validators.required),
@@ -56,13 +57,16 @@ export class CreatFormationComponent {
   removeRequirement(index: number) {
     this.requirements.removeAt(index);
   }
-
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.length) {
-      this.selectedFile = input.files[0];
-    }
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    this.selectedFile = file; // Assign selected file here
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.imagePreview = e.target.result; // Use this as the image src for preview
+    };
+    reader.readAsDataURL(file); // Convert file to data URL
   }
+  
   userSubmit(): void {
     if (this.createfr.valid) {
       const formData = new FormData();
@@ -84,7 +88,8 @@ export class CreatFormationComponent {
         next: (res) => {
           console.log('Creation Response:', res);
           this.createfr.reset();
-          this.router.navigate(['/formation']); // Navigate to refresh the list
+          this.router.navigate(['/all-trainings']); // Navigate to refresh the list
+          this.toastr.success('training added successfully !');
         },
         error: (error) => {
           console.error('Error creating formation:', error);
